@@ -191,10 +191,12 @@ with st.sidebar:
 
     use_demo = st.toggle("🗂️ Usar datos de ejemplo", value=True)
     if not use_demo:
+        DEFAULT_SHEET_URL = st.secrets.get("spreadsheet_url", "")
+
         spreadsheet_url = st.text_input(
             "URL de Google Sheets",
+            value=DEFAULT_SHEET_URL,
             placeholder="https://docs.google.com/spreadsheets/d/...",
-            help="Pegá la URL completa de tu Google Sheet",
         )
         if spreadsheet_url:
             if st.button("🔄 Recargar datos"):
