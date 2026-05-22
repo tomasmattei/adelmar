@@ -189,7 +189,7 @@ with st.sidebar:
     st.markdown("## 🚛 Tablero Flota")
     st.markdown("---")
 
-    use_demo = st.toggle("🗂️ Usar datos de ejemplo", value=True)
+    use_demo = st.toggle("🗂️ Usar datos de ejemplo", value=False)
     if not use_demo:
         DEFAULT_SHEET_URL = st.secrets.get("spreadsheet_url", "")
 
