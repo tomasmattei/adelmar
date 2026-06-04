@@ -198,6 +198,20 @@ with st.sidebar:
     st.markdown("## 🚛 Tablero Flota")
     st.markdown("---")
 
+    st.markdown("### 📅 Período de análisis")
+
+    fecha_desde = st.date_input(
+        "Desde",
+        value=pd.Timestamp.today().date() - timedelta(days=30),
+        key="fecha_desde_global"
+    )
+
+    fecha_hasta = st.date_input(
+        "Hasta",
+        value=pd.Timestamp.today().date(),
+        key="fecha_hasta_global"
+    )
+
     use_demo = st.toggle("🗂️ Usar datos de ejemplo", value=False)
     if not use_demo:
         DEFAULT_SHEET_URL = st.secrets.get("spreadsheet_url", "")
@@ -237,12 +251,35 @@ else:
         raw = load_all_data(spreadsheet_url)
 
 df_cd_raw = prepare_cargas_descargas(raw.get("cargas_descargas", pd.DataFrame()))
+if not df_cd_raw.empty and "Dia" in df_cd_raw.columns:
+
+    fecha_desde_ts = pd.Timestamp(fecha_desde)
+    fecha_hasta_ts = pd.Timestamp(fecha_hasta)
+
+    df_cd_raw = df_cd_raw[
+        (pd.to_datetime(df_cd_raw["Dia"]) >= fecha_desde_ts)
+        &
+        (pd.to_datetime(df_cd_raw["Dia"]) <= fecha_hasta_ts)
+    ]
 df_inc_raw = prepare_incidencias(raw.get("incidencias", pd.DataFrame()))
+if not df_inc_raw.empty and "Dia" in df_inc_raw.columns:
+
+    fecha_desde_ts = pd.Timestamp(fecha_desde)
+    fecha_hasta_ts = pd.Timestamp(fecha_hasta)
+
+    df_inc_raw = df_inc_raw[
+        (pd.to_datetime(df_inc_raw["Dia"]) >= fecha_desde_ts)
+        &
+        (pd.to_datetime(df_inc_raw["Dia"]) <= fecha_hasta_ts)
+    ]
 df_icm_raw = raw.get("icm_ranking", pd.DataFrame())
 
 # ─── Header ──────────────────────────────────────────────────────────────────
 st.markdown('<div class="main-header">🚛 Tablero Operativo de Flota</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-header">Monitoreo en tiempo real · Demoras · Incidencias · Kilómetros</div>', unsafe_allow_html=True)
+st.caption(
+    f"Período seleccionado: {fecha_desde.strftime('%d/%m/%Y')} → {fecha_hasta.strftime('%d/%m/%Y')}"
+)
 
 # Global KPIs
 col1, col2, col3, col4 = st.columns(4)
