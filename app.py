@@ -363,7 +363,7 @@ with tab1:
                 pivot = pivot.reindex([d for d in day_order if d in pivot.index])
                 pivot.index = [day_labels_short.get(d, d) for d in pivot.index]
                 # Convert minutes to HH:MM format for display
-                pivot_display = pivot.applymap(minutes_to_hm_format)
+                pivot_display = pivot.map(minutes_to_hm_format)
                 fig = px.imshow(pivot,
                                 title="📊 Heatmap: Demora promedio (HH:MM) — Día × Hora · Cargas",
                                 color_continuous_scale="YlOrRd",
@@ -479,7 +479,7 @@ with tab1:
                 pivot = pivot.reindex([d for d in day_order if d in pivot.index])
                 pivot.index = [day_labels_short.get(d, d) for d in pivot.index]
                 # Convert minutes to HH:MM format for display
-                pivot_display = pivot.applymap(minutes_to_hm_format)
+                pivot_display = pivot.map(minutes_to_hm_format)
                 fig = px.imshow(pivot,
                                 title="📊 Heatmap: Demora promedio (HH:MM) — Día × Hora · Descargas",
                                 color_continuous_scale="Blues",
