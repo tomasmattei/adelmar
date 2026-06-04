@@ -363,15 +363,24 @@ with tab1:
                 pivot = pivot.reindex([d for d in day_order if d in pivot.index])
                 pivot.index = [day_labels_short.get(d, d) for d in pivot.index]
                 # Convert minutes to HH:MM format for display
-                pivot_display = pivot.map(minutes_to_hm_format)
-                fig = px.imshow(pivot,
-                                title="📊 Heatmap: Demora promedio (HH:MM) — Día × Hora · Cargas",
-                                color_continuous_scale="YlOrRd",
-                                labels={"color":"horas", "x":"Hora", "y":"Día"},
-                                text_auto=False,
-                                aspect="auto")
-                # Add text annotations with HH:MM format
-                fig.update_traces(text=pivot_display.values, texttemplate="%{text}", textfont={"size": 11})
+                pivot_display = pivot.apply(
+                    lambda col: col.map(minutes_to_hm_format)
+                )
+
+                fig = px.imshow(
+                    pivot,
+                    title="📊 Heatmap: Demora promedio — Día × Hora · Cargas",
+                    color_continuous_scale="YlOrRd",
+                    aspect="auto"
+                )
+
+                fig.update_traces(
+                    customdata=pivot_display.values,
+                    hovertemplate=
+                        "Día: %{y}<br>" +
+                        "Hora: %{x}:00<br>" +
+                        "Demora: %{customdata}<extra></extra>"
+                )
                 fig.update_layout(height=300, margin=dict(t=50,b=20))
                 st.plotly_chart(fig, use_container_width=True)
 
@@ -479,15 +488,24 @@ with tab1:
                 pivot = pivot.reindex([d for d in day_order if d in pivot.index])
                 pivot.index = [day_labels_short.get(d, d) for d in pivot.index]
                 # Convert minutes to HH:MM format for display
-                pivot_display = pivot.map(minutes_to_hm_format)
-                fig = px.imshow(pivot,
-                                title="📊 Heatmap: Demora promedio (HH:MM) — Día × Hora · Descargas",
-                                color_continuous_scale="Blues",
-                                labels={"color":"horas","x":"Hora","y":"Día"},
-                                text_auto=False,
-                                aspect="auto")
-                # Add text annotations with HH:MM format
-                fig.update_traces(text=pivot_display.values, texttemplate="%{text}", textfont={"size": 11})
+                pivot_display = pivot.apply(
+                    lambda col: col.map(minutes_to_hm_format)
+                )
+
+                fig = px.imshow(
+                    pivot,
+                    title="📊 Heatmap: Demora promedio — Día × Hora · Descargas",
+                    color_continuous_scale="Blues",
+                    aspect="auto"
+                )
+
+                fig.update_traces(
+                    customdata=pivot_display.values,
+                    hovertemplate=
+                        "Día: %{y}<br>" +
+                        "Hora: %{x}:00<br>" +
+                        "Demora: %{customdata}<extra></extra>"
+                )
                 fig.update_layout(height=300, margin=dict(t=50,b=20))
                 st.plotly_chart(fig, use_container_width=True)
 
