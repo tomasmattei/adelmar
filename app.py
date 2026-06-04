@@ -138,6 +138,15 @@ def minutes_to_hhmm(minutes):
     return f"{h}h {m:02d}m"
 
 
+def minutes_to_hm_format(minutes):
+    """Convert minutes to H:MM format for heatmap display."""
+    if pd.isna(minutes) or minutes == 0:
+        return "0:00"
+    h = int(minutes // 60)
+    m = int(minutes % 60)
+    return f"{h}:{m:02d}"
+
+
 def prepare_cargas_descargas(df: pd.DataFrame) -> pd.DataFrame:
     if df.empty:
         return df
@@ -353,11 +362,16 @@ with tab1:
                 pivot = df_cargas.groupby(["DiaSemana","Hora"])["Demora total (hs:mm)_min"].mean().unstack(fill_value=0)
                 pivot = pivot.reindex([d for d in day_order if d in pivot.index])
                 pivot.index = [day_labels_short.get(d, d) for d in pivot.index]
+                # Convert minutes to HH:MM format for display
+                pivot_display = pivot.applymap(minutes_to_hm_format)
                 fig = px.imshow(pivot,
-                                title="📊 Heatmap: Demora promedio (min) — Día × Hora · Cargas",
+                                title="📊 Heatmap: Demora promedio (HH:MM) — Día × Hora · Cargas",
                                 color_continuous_scale="YlOrRd",
-                                labels={"color":"min", "x":"Hora", "y":"Día"},
+                                labels={"color":"horas", "x":"Hora", "y":"Día"},
+                                text_auto=False,
                                 aspect="auto")
+                # Add text annotations with HH:MM format
+                fig.update_traces(text=pivot_display.values, texttemplate="%{text}", textfont={"size": 11})
                 fig.update_layout(height=300, margin=dict(t=50,b=20))
                 st.plotly_chart(fig, use_container_width=True)
 
@@ -464,11 +478,16 @@ with tab1:
                 pivot = df_descargas.groupby(["DiaSemana","Hora"])["Demora total (hs:mm)_min"].mean().unstack(fill_value=0)
                 pivot = pivot.reindex([d for d in day_order if d in pivot.index])
                 pivot.index = [day_labels_short.get(d, d) for d in pivot.index]
+                # Convert minutes to HH:MM format for display
+                pivot_display = pivot.applymap(minutes_to_hm_format)
                 fig = px.imshow(pivot,
-                                title="📊 Heatmap: Demora promedio (min) — Día × Hora · Descargas",
+                                title="📊 Heatmap: Demora promedio (HH:MM) — Día × Hora · Descargas",
                                 color_continuous_scale="Blues",
-                                labels={"color":"min","x":"Hora","y":"Día"},
+                                labels={"color":"horas","x":"Hora","y":"Día"},
+                                text_auto=False,
                                 aspect="auto")
+                # Add text annotations with HH:MM format
+                fig.update_traces(text=pivot_display.values, texttemplate="%{text}", textfont={"size": 11})
                 fig.update_layout(height=300, margin=dict(t=50,b=20))
                 st.plotly_chart(fig, use_container_width=True)
 
